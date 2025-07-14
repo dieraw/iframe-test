@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тестовая страница для iFrame</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
+  <div class="controls">
+    <h1>Панель настройки iFrame</h1>
+
+    <!-- Основные параметры -->
+    <fieldset>
+      <legend>Основные параметры</legend>
+      <label for="src">URL источника:</label>
+      <input type="text" id="src" value="iframe_content.html">
+
+      <label for="name">Имя iframe (атрибут name):</label>
+      <input type="text" id="name" value="brandspace-iframe">
+
+      <label for="width">Ширина:</label>
+      <input type="text" id="width" value="100%">
+
+      <label for="height">Высота:</label>
+      <input type="text" id="height" value="450px">
+
+      <label for="title">Title (для доступности):</label>
+      <input type="text" id="title" value="Встраиваемый контент от бренда">
+    </fieldset>
+
+    <!-- Sandbox -->
+    <fieldset>
+      <legend>Sandbox (Безопасность)</legend>
+      <label><input type="checkbox" id="allow-forms"> Разрешить отправку форм (allow-forms)</label>
+      <label><input type="checkbox" id="allow-same-origin"> Разрешить same-origin (allow-same-origin)</label>
+      <label><input type="checkbox" id="allow-scripts"> Разрешить выполнение скриптов (allow-scripts)</label>
+      <label><input type="checkbox" id="allow-downloads"> Разрешить загрузки (allow-downloads)</label>
+    </fieldset>
+
+    <!-- Дополнительные политики -->
+    <fieldset>
+      <legend>Дополнительные политики</legend>
+      <label for="permissions">Разрешения (Permissions Policy):</label>
+      <input type="text" id="permissions" placeholder="geolocation; camera 'none';">
+
+      <label for="referrerpolicy">Политика Referrer:</label>
+      <select id="referrerpolicy">
+        <option value="no-referrer">no-referrer</option>
+        <option value="origin">origin</option>
+        <option value="strict-origin-when-cross-origin" selected>strict-origin-when-cross-origin</option>
+        <option value="unsafe-url">unsafe-url</option>
+      </select>
+    </fieldset>
+
+    <!-- Стратегия загрузки -->
+    <fieldset>
+      <legend>Стратегия загрузки</legend>
+      <label for="loading">Стратегия загрузки (loading):</label>
+      <select id="loading">
+        <option value="eager">Eager (сразу)</option>
+        <option value="lazy">Lazy (отложенная)</option>
+      </select>
+
+      <label for="fetchpriority">Приоритет загрузки (fetchpriority):</label>
+      <select id="fetchpriority">
+        <option value="auto">Auto</option>
+        <option value="high">High</option>
+        <option value="low">Low</option>
+      </select>
+    </fieldset>
+
+    <!-- Параметры для мобильной заглушки -->
+    <fieldset>
+      <legend>Параметры для мобильной заглушки</legend>
+      <label for="fallback-header">Заголовок:</label>
+      <input type="text" id="fallback-header" value="Наш партнерский контент">
+
+      <label for="fallback-desc">Описание:</label>
+      <textarea id="fallback-desc" rows="3">Здесь вы можете ознакомиться с эксклюзивными предложениями от нашего партнера.</textarea>
+
+      <label for="fallback-button">Текст кнопки:</label>
+      <input type="text" id="fallback-button" value="Перейти на сайт">
+    </fieldset>
+
+    <button id="generate-btn">Сгенерировать iFrame</button>
+  </div>
+
+  <!-- ОБЛАСТЬ РЕЗУЛЬТАТА -->
+  <div class="result">
+    <h2>Результат</h2>
+    <div id="iframe-container">
+      <!-- iFrame будет вставлен сюда -->
+    </div>
+
+    <h2>Сгенерированный HTML-код</h2>
+    <pre><code id="code-output"></code></pre>
+
+    <h2>Симуляция мобильной заглушки</h2>
+    <div class="mobile-fallback">
+      <h3 id="mobile-header-output"></h3>
+      <p id="mobile-desc-output"></p>
+      <a href="#" id="mobile-button-output" class="mobile-button" target="_blank"></a>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
