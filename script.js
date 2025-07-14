@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const generateBtn = document.getElementById('generate-btn');
+    const allControls = document.querySelectorAll('.controls input, .controls select, .controls textarea');
 
-    function generateIframe() {
-        // --- Сбор данных из формы ---
+    function generateAndApply() {
+        // ... (вся функция generateAndApply остается БЕЗ ИЗМЕНЕНИЙ) ...
         const src = document.getElementById('src').value;
         const name = document.getElementById('name').value;
         const width = document.getElementById('width').value;
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const loading = document.getElementById('loading').value;
         const fetchpriority = document.getElementById('fetchpriority').value;
 
-        // Собираем значения для sandbox
         const sandboxValues = [];
         if (document.getElementById('allow-forms').checked) sandboxValues.push('allow-forms');
         if (document.getElementById('allow-same-origin').checked) sandboxValues.push('allow-same-origin');
@@ -21,50 +20,90 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('allow-downloads').checked) sandboxValues.push('allow-downloads');
         const sandbox = sandboxValues.join(' ');
 
-        // --- Создание iFrame ---
-        const iframe = document.createElement('iframe');
-        iframe.src = src;
-        if (name) iframe.name = name;
-        if (title) iframe.title = title;
-        if (sandbox) iframe.sandbox = sandbox;
-        if (permissions) iframe.allow = permissions;
-        if (referrerpolicy) iframe.referrerPolicy = referrerpolicy;
-        if (loading) iframe.loading = loading;
-        if (fetchpriority) iframe.setAttribute('fetchpriority', fetchpriority);
+        const params = new URLSearchParams();
+        params.set('src', src);
+        params.set('name', name);
+        params.set('width', width);
+        params.set('height', height);
+        params.set('title', title);
+        params.set('sandbox', sandbox);
+        params.set('allow', permissions);
+        params.set('referrerpolicy', referrerpolicy);
+        params.set('loading', loading);
+        params.set('fetchpriority', fetchpriority);
 
-        iframe.style.width = width;
-        iframe.style.height = height;
+        const standalonePageUrl = `iframe_content_standalone.html?${params.toString()}`;
 
-        // --- Обновление DOM ---
+        const linkOutput = document.getElementById('link-output');
+        linkOutput.textContent = standalonePageUrl;
+
+        const openLinkBtn = document.getElementById('open-link-btn');
+        openLinkBtn.href = standalonePageUrl;
+
         const container = document.getElementById('iframe-container');
-        container.innerHTML = ''; // Очищаем старый iframe
-        container.appendChild(iframe);
+        // Обновляем только src iframe, не пересоздавая его, чтобы изменение ширины не вызывало перезагрузку
+        let previewIframe = container.querySelector('iframe');
+        if (!previewIframe) {
+            previewIframe = document.createElement('iframe');
+            container.appendChild(previewIframe);
+        }
+        previewIframe.src = standalonePageUrl;
 
-        // --- Вывод сгенерированного кода ---
-        const codeOutput = document.getElementById('code-output');
-        // Форматируем outerHTML для лучшей читаемости
-        let formattedHtml = iframe.outerHTML
-            .replace(/><\/iframe>/, ' />') // для самозакрывающегося вида
-            .replace(/ /g, '\n  ')
-            .replace('src', '\n  src')
-            .replace('<iframe', '<iframe');
-
-        codeOutput.textContent = formattedHtml;
-
-        // --- Обновление мобильной заглушки ---
         const fallbackHeader = document.getElementById('fallback-header').value;
         const fallbackDesc = document.getElementById('fallback-desc').value;
-        const fallbackButton = document.getElementById('fallback-button').value;
+        const fallbackButtonText = document.getElementById('fallback-button').value;
 
         document.getElementById('mobile-header-output').textContent = fallbackHeader;
         document.getElementById('mobile-desc-output').textContent = fallbackDesc;
-        const buttonEl = document.getElementById('mobile-button-output');
-        buttonEl.textContent = fallbackButton || 'Открыть';
-        buttonEl.href = src; // Кнопка ведет на тот же URL
+        const mobileButton = document.getElementById('mobile-button-output');
+        mobileButton.textContent = fallbackButtonText || 'Открыть';
+        mobileButton.href = standalonePageUrl;
     }
 
-    generateBtn.addEventListener('click', generateIframe);
+    // Добавляем слушатель для мгновенного обновления
+    allControls.forEach(control => {
+        control.addEventListener('input', generateAndApply);
+    });
 
-    // Сгенерировать iframe при первой загрузке страницы с настройками по умолчанию
-    generateIframe();
+    // --- НОВЫЙ КОД ДЛЯ ИЗМЕНЕНИЯ ШИРИНЫ ---
+    const resizer = document.getElementById('resizer');
+    const iframeContainer = document.getElementById('iframe-container');
+    const widthDisplay = document.querySelector('#width-display span');
+
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isResizing = true;
+        // Добавляем слушатели на весь документ, чтобы можно было двигать мышь за пределы ползунка
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    });
+
+    function handleMouseMove(e) {
+        if (!isResizing) return;
+
+        // Вычисляем новую ширину
+        const containerRect = iframeContainer.parentElement.getBoundingClientRect();
+        let newWidth = e.clientX - containerRect.left;
+
+        // Ограничения по ширине (например, от 100px до 90% родителя)
+        const maxWidth = iframeContainer.parentElement.clientWidth * 0.95;
+        if (newWidth < 100) newWidth = 100;
+        if (newWidth > maxWidth) newWidth = maxWidth;
+
+        // Применяем новую ширину
+        iframeContainer.style.width = `${newWidth}px`;
+        // Обновляем отображение ширины
+        widthDisplay.textContent = `${Math.round(newWidth)}px`;
+    }
+
+    function handleMouseUp() {
+        isResizing = false;
+        // Важно: удаляем слушатели, чтобы они не работали после отпускания мыши
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    generateAndApply();
 });

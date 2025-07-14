@@ -123,3 +123,62 @@ pre {
     border-radius: 5px;
     font-weight: bold;
 }
+
+resizable-preview {
+    margin-top: 30px;
+}
+
+.resizable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.resizable-header h2 {
+    margin: 0;
+    border: none;
+}
+
+#width-display {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.preview-wrapper {
+    display: flex;
+    align-items: stretch; /* Растягивает ползунок на всю высоту */
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 4px;
+    min-height: 450px; /* Минимальная высота, чтобы было видно */
+}
+
+#iframe-container {
+    /* Убираем лишние стили, так как они теперь на .preview-wrapper */
+    border: none;
+    background-color: transparent;
+    border-radius: 0;
+    width: 450px; /* Начальная ширина */
+    flex-shrink: 0; /* Запрещаем контейнеру сжиматься */
+}
+
+#iframe-container iframe {
+    height: 100%; /* Занимает всю высоту родителя */
+    width: 100%;  /* Занимает всю ширину родителя */
+}
+
+.resizer {
+    width: 10px;
+    background-color: #f1f1f1;
+    border-left: 1px solid #ccc;
+    cursor: col-resize; /* Курсор для изменения ширины */
+    flex-shrink: 0;
+}
+
+.resizer:hover {
+    background-color: #e0e0e0;
+}

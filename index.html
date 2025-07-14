@@ -88,16 +88,13 @@
 
     <button id="generate-btn">Сгенерировать iFrame</button>
   </div>
-
-  <!-- ОБЛАСТЬ РЕЗУЛЬТАТА -->
   <div class="result">
-    <h2>Результат</h2>
-    <div id="iframe-container">
-      <!-- iFrame будет вставлен сюда -->
-    </div>
+    <h2>Сгенерированная ссылка для встраивания</h2>
+    <p>Используйте эту ссылку как `src` для вашего реального iframe-компонента. Вы можете открыть ее в новой вкладке для проверки.</p>
+    <pre><code id="link-output"></code></pre>
+    <a href="#" id="open-link-btn" target="_blank" class="mobile-button">Открыть тестовую страницу в новой вкладке</a>
 
-    <h2>Сгенерированный HTML-код</h2>
-    <pre><code id="code-output"></code></pre>
+    <hr style="margin: 30px 0;">
 
     <h2>Симуляция мобильной заглушки</h2>
     <div class="mobile-fallback">
@@ -105,6 +102,22 @@
       <p id="mobile-desc-output"></p>
       <a href="#" id="mobile-button-output" class="mobile-button" target="_blank"></a>
     </div>
+
+    <!-- БЛОК LIVE PREVIEW С ВОЗМОЖНОСТЬЮ ИЗМЕНЕНИЯ ШИРИНЫ -->
+    <div class="resizable-preview">
+      <div class="resizable-header">
+        <h2>Live Preview</h2>
+        <div id="width-display">Ширина: <span>450px</span></div>
+      </div>
+      <div class="preview-wrapper">
+        <div id="iframe-container">
+          <!-- iFrame будет вставлен сюда -->
+        </div>
+        <!-- Наш ползунок для изменения ширины -->
+        <div class="resizer" id="resizer"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
