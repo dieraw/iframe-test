@@ -5,7 +5,7 @@
   <title>Содержимое iFrame</title>
   <style>
     body { font-family: sans-serif; background-color: #f0f8ff; padding: 15px; }
-    .status { border-left: 4px solid; padding-left: 10px; margin: 10px 0; }
+    .status { border-left: 4px solid; padding: 10px; margin: 10px 0; }
     .success { border-color: #28a745; background-color: #e9f7ec; }
     .error { border-color: #dc3545; background-color: #fcebed; }
     fieldset { margin-top: 20px; }
@@ -25,12 +25,22 @@
 <!-- Тест отправки форм -->
 <fieldset>
   <legend>Тест отправки форм</legend>
-  <form action="javascript:alert('Форма успешно отправлена!');">
+  <!-- === ИЗМЕНЕНО: action теперь вызывает функцию === -->
+  <form onsubmit="handleFormSubmit(event)">
     <label for="test-input">Введите текст:</label>
     <input type="text" id="test-input" name="test">
     <input type="submit" value="Отправить форму">
   </form>
-  <p><small>Если кнопка не работает, значит <code>sandbox="allow-forms"</code> не установлен.</small></p>
+  <!-- === НОВОЕ: блок для вывода результата === -->
+  <div id="form-status"></div>
+  <p><small>Если кнопка не работает или нет сообщения об успехе, значит <code>allow-forms</code> и/или <code>allow-scripts</code> не установлены.</small></p>
+</fieldset>
+
+<!-- Тест модальных окон -->
+<fieldset>
+  <legend>Тест модальных окон</legend>
+  <button onclick="alert('Это тестовый alert!')">Вызвать alert()</button>
+  <p><small>Если alert не появляется, значит <code>allow-modals</code> не установлен.</small></p>
 </fieldset>
 
 <!-- Тест загрузки файлов -->
@@ -39,7 +49,7 @@
   <a href="download_file.txt" download="my-file.txt">
     <button type="button">Скачать файл</button>
   </a>
-  <p><small>Если скачивание не начинается, значит <code>sandbox="allow-downloads"</code> не установлен.</small></p>
+  <p><small>Если скачивание не начинается, значит <code>allow-downloads</code> не установлен.</small></p>
 </fieldset>
 
 <!-- Тест Permissions Policy -->
@@ -50,36 +60,31 @@
   <p><small>Если браузер не запрашивает доступ, значит <code>allow="geolocation"</code> не установлен.</small></p>
 </fieldset>
 
-<!-- Тест Referrer -->
-<fieldset>
-  <legend>Информация о странице</legend>
-  <p><b>Referrer:</b> <span id="referrer-info"></span></p>
-  <p><b>Origin:</b> <span id="origin-info"></span></p>
-</fieldset>
-
-
 <script>
+  // === НОВАЯ ФУНКЦИЯ для обработки формы ===
+  function handleFormSubmit(event) {
+    event.preventDefault(); // Предотвращаем реальную отправку формы
+    const formStatus = document.getElementById('form-status');
+    const inputValue = document.getElementById('test-input').value;
+    formStatus.className = 'status success';
+    formStatus.innerHTML = `Форма успешно обработана скриптом! Вы ввели: "<b>${inputValue || 'пусто'}</b>"`;
+  }
+
   // Тест выполнения скриптов
   try {
     const scriptStatus = document.getElementById('script-status');
     scriptStatus.textContent = 'Скрипт успешно выполнен! Фон изменен на желтый.';
     scriptStatus.className = 'status success';
-    document.body.style.backgroundColor = '#fffacd'; // Light yellow
+    document.body.style.backgroundColor = '#fffacd';
 
-    // Тест same-origin
     try {
-      // Эта строка вызовет ошибку, если нет allow-same-origin
       let parentLocation = window.top.location.href;
       scriptStatus.innerHTML += '<br><b>[SUCCESS]</b> Доступ к parent-окну разрешен (allow-same-origin).';
     } catch (e) {
       scriptStatus.innerHTML += '<br><b>[BLOCKED]</b> Доступ к parent-окну заблокирован (нет allow-same-origin).';
     }
 
-  } catch (e) {
-    const scriptStatus = document.getElementById('script-status');
-    scriptStatus.textContent = 'Выполнение скриптов заблокировано (нет allow-scripts).';
-    scriptStatus.className = 'status error';
-  }
+  } catch (e) { /* ... */ }
 
   // Тест геолокации
   function getGeo() {
@@ -93,10 +98,6 @@
       geoStatus.textContent = 'Геолокация не поддерживается браузером.';
     }
   }
-
-  // Вывод Referrer и Origin
-  document.getElementById('referrer-info').textContent = document.referrer || '[пусто]';
-  document.getElementById('origin-info').textContent = document.origin;
 </script>
 </body>
 </html>

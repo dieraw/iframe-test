@@ -182,3 +182,53 @@ resizable-preview {
 .resizer:hover {
     background-color: #e0e0e0;
 }
+/* Стили для блока превью с изменением размера */
+.resizable-preview {
+    margin-top: 30px;
+}
+
+.resizable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#width-display {
+    font-size: 14px;
+    color: #555;
+    background-color: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.preview-wrapper {
+    position: relative;
+    width: 100%; /* Начальная ширина */
+    max-width: 98%;
+    padding-right: 10px; /* Место для ресайзера */
+}
+
+#iframe-container {
+    width: 100%;
+    height: 100%;
+}
+
+#iframe-container iframe {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-right: 2px solid #007bff;
+}
+.resizer:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}

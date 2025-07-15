@@ -1,8 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const allControls = document.querySelectorAll('.controls input, .controls select, .controls textarea');
 
+    // Функция Debounce
+    function debounce(func, delay) {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
+
     function generateAndApply() {
-        // ... (вся функция generateAndApply остается БЕЗ ИЗМЕНЕНИЙ) ...
+        // Сбор данных
         const src = document.getElementById('src').value;
         const name = document.getElementById('name').value;
         const width = document.getElementById('width').value;
@@ -18,13 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('allow-same-origin').checked) sandboxValues.push('allow-same-origin');
         if (document.getElementById('allow-scripts').checked) sandboxValues.push('allow-scripts');
         if (document.getElementById('allow-downloads').checked) sandboxValues.push('allow-downloads');
+        if (document.getElementById('allow-modals').checked) sandboxValues.push('allow-modals');
         const sandbox = sandboxValues.join(' ');
 
+        // Формируем URL с параметрами для страницы-обертки
         const params = new URLSearchParams();
         params.set('src', src);
         params.set('name', name);
-        params.set('width', width);
-        params.set('height', height);
         params.set('title', title);
         params.set('sandbox', sandbox);
         params.set('allow', permissions);
@@ -32,23 +43,31 @@ document.addEventListener('DOMContentLoaded', () => {
         params.set('loading', loading);
         params.set('fetchpriority', fetchpriority);
 
+        // ВАЖНО: размеры теперь передаются как параметры самой обертке
+        params.set('width', width);
+        params.set('height', height);
+
         const standalonePageUrl = `iframe_content_standalone.html?${params.toString()}`;
 
+        // Обновляем UI
         const linkOutput = document.getElementById('link-output');
         linkOutput.textContent = standalonePageUrl;
+        document.getElementById('open-link-btn').href = standalonePageUrl;
 
-        const openLinkBtn = document.getElementById('open-link-btn');
-        openLinkBtn.href = standalonePageUrl;
-
+        // Обновляем превью
         const container = document.getElementById('iframe-container');
-        // Обновляем только src iframe, не пересоздавая его, чтобы изменение ширины не вызывало перезагрузку
         let previewIframe = container.querySelector('iframe');
         if (!previewIframe) {
             previewIframe = document.createElement('iframe');
             container.appendChild(previewIframe);
         }
+        // Устанавливаем src обертки
         previewIframe.src = standalonePageUrl;
+        // Устанавливаем размеры для контейнера превью
+        previewIframe.style.width = width;
+        previewIframe.style.height = height;
 
+        // Обновляем мобильную заглушку
         const fallbackHeader = document.getElementById('fallback-header').value;
         const fallbackDesc = document.getElementById('fallback-desc').value;
         const fallbackButtonText = document.getElementById('fallback-button').value;
@@ -57,17 +76,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mobile-desc-output').textContent = fallbackDesc;
         const mobileButton = document.getElementById('mobile-button-output');
         mobileButton.textContent = fallbackButtonText || 'Открыть';
-        mobileButton.href = standalonePageUrl;
+        mobileButton.href = standalonePageUrl; // Заглушка тоже ведет на страницу-обертку
     }
 
-    // Добавляем слушатель для мгновенного обновления
+    // Создаем "обезвреженную" версию функции
+    const debouncedGenerate = debounce(generateAndApply, 300);
+
+    // Вешаем слушатели на все контролы
     allControls.forEach(control => {
-        control.addEventListener('input', generateAndApply);
+        control.addEventListener('input', debouncedGenerate);
     });
 
-    // --- НОВЫЙ КОД ДЛЯ ИЗМЕНЕНИЯ ШИРИНЫ ---
+    // --- Логика ресайзера (без изменений, она работает хорошо) ---
     const resizer = document.getElementById('resizer');
-    const iframeContainer = document.getElementById('iframe-container');
+    const previewWrapper = document.querySelector('.preview-wrapper');
     const widthDisplay = document.querySelector('#width-display span');
 
     let isResizing = false;
@@ -75,35 +97,28 @@ document.addEventListener('DOMContentLoaded', () => {
     resizer.addEventListener('mousedown', (e) => {
         e.preventDefault();
         isResizing = true;
-        // Добавляем слушатели на весь документ, чтобы можно было двигать мышь за пределы ползунка
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
     });
 
     function handleMouseMove(e) {
         if (!isResizing) return;
-
-        // Вычисляем новую ширину
-        const containerRect = iframeContainer.parentElement.getBoundingClientRect();
+        const containerRect = previewWrapper.parentElement.getBoundingClientRect();
         let newWidth = e.clientX - containerRect.left;
-
-        // Ограничения по ширине (например, от 100px до 90% родителя)
-        const maxWidth = iframeContainer.parentElement.clientWidth * 0.95;
+        const maxWidth = previewWrapper.parentElement.clientWidth * 0.98;
         if (newWidth < 100) newWidth = 100;
         if (newWidth > maxWidth) newWidth = maxWidth;
 
-        // Применяем новую ширину
-        iframeContainer.style.width = `${newWidth}px`;
-        // Обновляем отображение ширины
+        previewWrapper.style.width = `${newWidth}px`;
         widthDisplay.textContent = `${Math.round(newWidth)}px`;
     }
 
     function handleMouseUp() {
         isResizing = false;
-        // Важно: удаляем слушатели, чтобы они не работали после отпускания мыши
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
     }
 
+    // Первоначальный запуск
     generateAndApply();
 });

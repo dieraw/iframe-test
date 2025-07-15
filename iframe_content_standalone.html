@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Титул будет установлен из параметров URL -->
   <title>Встраиваемая страница</title>
   <style>
     /* Убираем отступы, чтобы iframe занимал все пространство */
@@ -24,20 +23,15 @@
 <body>
 
 <script>
-  // Этот скрипт выполнится сразу при загрузке страницы
   (function() {
-    // 1. Получаем все параметры из URL
     const urlParams = new URLSearchParams(window.location.search);
-
-    // 2. Создаем элемент iframe
     const iframe = document.createElement('iframe');
 
-    // 3. Устанавливаем атрибуты iframe на основе параметров из URL
-    // Мы используем `urlParams.get('param') || 'default_value'` для безопасности
-    iframe.src = urlParams.get('src') || 'iframe_content.html';
+    // Применяем все атрибуты из URL
+    iframe.src = urlParams.get('src') || 'about:blank'; // about:blank как безопасный фолбэк
     iframe.name = urlParams.get('name') || '';
     iframe.title = urlParams.get('title') || 'Встраиваемый контент';
-    iframe.sandbox = urlParams.get('sandbox') || ''; // Если параметра нет, sandbox будет пустым (самый строгий режим)
+    iframe.sandbox = urlParams.get('sandbox') || '';
     iframe.allow = urlParams.get('allow') || '';
     iframe.referrerPolicy = urlParams.get('referrerpolicy') || 'strict-origin-when-cross-origin';
     iframe.loading = urlParams.get('loading') || 'eager';
@@ -47,14 +41,10 @@
       iframe.setAttribute('fetchpriority', fetchPriority);
     }
 
-    // Устанавливаем стили для размеров
-    iframe.style.width = urlParams.get('width') || '100%';
-    iframe.style.height = urlParams.get('height') || '100vh';
-
-    // Устанавливаем заголовок самой страницы для наглядности
+    // Устанавливаем заголовок самой страницы-обертки для наглядности
     document.title = iframe.title;
 
-    // 4. Добавляем созданный и настроенный iframe на страницу
+    // Добавляем iframe в body
     document.body.appendChild(iframe);
   })();
 </script>

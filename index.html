@@ -13,7 +13,7 @@
   <div class="controls">
     <h1>Панель настройки iFrame</h1>
 
-    <!-- Основные параметры -->
+    <!-- ... все ваши fieldset остаются здесь без изменений ... -->
     <fieldset>
       <legend>Основные параметры</legend>
       <label for="src">URL источника:</label>
@@ -32,16 +32,15 @@
       <input type="text" id="title" value="Встраиваемый контент от бренда">
     </fieldset>
 
-    <!-- Sandbox -->
     <fieldset>
       <legend>Sandbox (Безопасность)</legend>
       <label><input type="checkbox" id="allow-forms"> Разрешить отправку форм (allow-forms)</label>
       <label><input type="checkbox" id="allow-same-origin"> Разрешить same-origin (allow-same-origin)</label>
       <label><input type="checkbox" id="allow-scripts"> Разрешить выполнение скриптов (allow-scripts)</label>
       <label><input type="checkbox" id="allow-downloads"> Разрешить загрузки (allow-downloads)</label>
+      <label><input type="checkbox" id="allow-modals"> Разрешить модальные окна (allow-modals)</label>
     </fieldset>
 
-    <!-- Дополнительные политики -->
     <fieldset>
       <legend>Дополнительные политики</legend>
       <label for="permissions">Разрешения (Permissions Policy):</label>
@@ -56,7 +55,6 @@
       </select>
     </fieldset>
 
-    <!-- Стратегия загрузки -->
     <fieldset>
       <legend>Стратегия загрузки</legend>
       <label for="loading">Стратегия загрузки (loading):</label>
@@ -73,7 +71,6 @@
       </select>
     </fieldset>
 
-    <!-- Параметры для мобильной заглушки -->
     <fieldset>
       <legend>Параметры для мобильной заглушки</legend>
       <label for="fallback-header">Заголовок:</label>
@@ -86,13 +83,14 @@
       <input type="text" id="fallback-button" value="Перейти на сайт">
     </fieldset>
 
-    <button id="generate-btn">Сгенерировать iFrame</button>
   </div>
+
+  <!-- ОБЛАСТЬ РЕЗУЛЬТАТА -->
   <div class="result">
-    <h2>Сгенерированная ссылка для встраивания</h2>
-    <p>Используйте эту ссылку как `src` для вашего реального iframe-компонента. Вы можете открыть ее в новой вкладке для проверки.</p>
+    <h2>Сгенерированная ссылка</h2>
+    <p>Используйте эту ссылку как `src` для вашего iframe-компонента. Ее можно открыть в новой вкладке.</p>
     <pre><code id="link-output"></code></pre>
-    <a href="#" id="open-link-btn" target="_blank" class="mobile-button">Открыть тестовую страницу в новой вкладке</a>
+    <a href="#" id="open-link-btn" target="_blank" class="mobile-button">Открыть в новой вкладке</a>
 
     <hr style="margin: 30px 0;">
 
@@ -103,17 +101,16 @@
       <a href="#" id="mobile-button-output" class="mobile-button" target="_blank"></a>
     </div>
 
-    <!-- БЛОК LIVE PREVIEW С ВОЗМОЖНОСТЬЮ ИЗМЕНЕНИЯ ШИРИНЫ -->
+    <!-- ИЗМЕНЕННЫЙ БЛОК ПРЕВЬЮ -->
     <div class="resizable-preview">
       <div class="resizable-header">
         <h2>Live Preview</h2>
-        <div id="width-display">Ширина: <span>450px</span></div>
+        <div id="width-display">Ширина контейнера: <span>450px</span></div>
       </div>
       <div class="preview-wrapper">
         <div id="iframe-container">
-          <!-- iFrame будет вставлен сюда -->
+          <!-- Iframe будет вставлен сюда через JS -->
         </div>
-        <!-- Наш ползунок для изменения ширины -->
         <div class="resizer" id="resizer"></div>
       </div>
     </div>
